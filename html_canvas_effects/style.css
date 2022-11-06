@@ -1,0 +1,35 @@
+* {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+
+#canvas1 {
+    position: absolute;
+    background-color: rgb(50, 50, 50);
+}
+
+.controls {
+    position: absolute;
+    z-index: 100;
+}
+
+img {
+    display: none;
+}
+
+button {
+    padding: 20px;
+    font-size: 40px;
+    margin: 20px;
+    font-family: 'Bangers', cursive;
+    background-color: rgb(50, 50, 50);
+    color: white;
+    transition-duration: .25s;
+}
+
+button:hover {
+    color: rgb(50, 50, 50);
+    background-color: white;
+}

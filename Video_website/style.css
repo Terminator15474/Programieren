@@ -1,0 +1,10 @@
+body {
+    background-color: darkslategray;
+    color: whitesmoke;
+}
+
+#videos {
+    display: grid;
+    gap: 50px;
+    grid-template-columns: auto auto;
+}
