@@ -1,3 +1,10 @@
+import {
+    glMatrix,
+    mat2, mat2d, mat3, mat4,
+    quat, quat2,
+    vec2, vec3, vec4,} from './toji-gl-matrix-v3.3.0-62-g8962b2e/src/index.js';
+
+
 /** @type {HTMLCanvasElement} */
 const canvas = document.getElementById("canvas1");
 const gl = canvas.getContext("webgl");
