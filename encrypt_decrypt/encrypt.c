@@ -80,6 +80,7 @@ int main(int args, char* argv[]) {
 		buffer[reading_index] = fgetc(input_file);
 		reading_index++;
 	}
+	printf("%s", buffer);
 
 	printf("\nRead: %s", buffer);
 
@@ -108,6 +109,7 @@ int main(int args, char* argv[]) {
 	//encrypt
 	if(MODE == ENCRYPT) {
 		printf("\n\nEncrypting\n");
+		printf("%s", key);
 		int i = 0;
 		for(i=0; i < file_size; i++) {
 			char temp_xor =  (char)(buffer[i] ^ key[i]);

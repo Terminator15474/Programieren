@@ -48,7 +48,7 @@ class Paritcle {
         this.size = this.effect.gap;
         this.vx = 0;
         this.vy = 0;
-        this.ease = 0.1;
+        this.ease = 0.2;
         this.dx = 0;
         this.dy = 0;
         this.force = 0;
@@ -96,7 +96,7 @@ class Effect {
         this.centerY  = this.height * 0.5;
         this.x = this.centerX - this.image.width * 0.5;
         this.y = this.centerY - this.image.height * 0.5;
-        this.gap = 3;
+        this.gap = 5;
         this.mouse = {
             radius: 3000,
             x: undefined,
