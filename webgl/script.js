@@ -192,3 +192,5 @@ function drawScene(gl, programInfo, buffers) {
 
 const buffers = initBuffers(gl);
 drawScene(gl, programInfo, buffers);
+
+// function to 
