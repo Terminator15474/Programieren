@@ -35,7 +35,6 @@ char* generateKey(int file_size, char*password) {
 	return key;
 }
 
-
 int main(int args, char* argv[]) {
 
 	//get mode
@@ -80,9 +79,8 @@ int main(int args, char* argv[]) {
 		buffer[reading_index] = fgetc(input_file);
 		reading_index++;
 	}
-	printf("%s", buffer);
 
-	printf("\nRead: %s", buffer);
+	printf("\nRead: %s \n Lenght: %i", buffer, strlen(buffer));
 
 	//read password
 	printf("\nPlease enter password: ");
