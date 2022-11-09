@@ -1,14 +1,24 @@
 const express = require('express');
 const fs = require('fs');
 const app = express();
+const os = require('os');
+
+let path = "";
+
+if(os.hostname() == "LAPTOP-1ORE7K2H") {
+    path = "C:/Users/jando";
+} else {
+    path = "A:";
+}
+
 
 app.get('/', (req, res) => {
-    res.sendFile("A:/Programieren/webgl/site.html");
+    res.sendFile(path + "/Programieren/webgl/site.html");        
 });
 
 app.get('/:file', (req, res) => {
     let file = req.params.file;
-    res.sendFile("A:/Programieren/webgl/" + file);
+    res.sendFile(path + "/Programieren/webgl/" + file);
 });
 
 app.get('/:directory/:subdir/:file', (req, res) => {
@@ -16,7 +26,7 @@ app.get('/:directory/:subdir/:file', (req, res) => {
     let directory = req.params.directory;
     let subdir = req.params.subdir;
     console.log(directory + "/" + subdir + "/" + file);
-    res.sendFile("A:/Programieren/webgl/" + directory + "/" + subdir + "/"+ file);
+    res.sendFile(path + "/Programieren/webgl/" + directory + "/" + subdir + "/"+ file);
 });
 
 app.listen(8080, () => {console.log("Listening on port 8080");});

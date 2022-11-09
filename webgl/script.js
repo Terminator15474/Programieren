@@ -3,6 +3,7 @@ import {
     mat2, mat2d, mat3, mat4,
     quat, quat2,
     vec2, vec3, vec4,} from './toji-gl-matrix-v3.3.0-62-g8962b2e/src/index.js';
+import { str } from './toji-gl-matrix-v3.3.0-62-g8962b2e/src/mat2.js';
 
 
 /** @type {HTMLCanvasElement} */
@@ -11,20 +12,26 @@ const gl = canvas.getContext("webgl");
 
 // Vertex shader program
 const vertexShaderSource = `
-attribute vec4 aVertexPosition;
+    attribute vec4 aVertexPosition;
+    attribute vec4 aVertexColor;
 
-uniform mat4 uModelViewMatrix;
-uniform mat4 uProjectionMatrix;
+    uniform mat4 uModelViewMatrix;
+    uniform mat4 uProjectionMatrix;
 
-void main() {
-    gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-}
+    varying lowp vec4 vColor;
+
+    void main() {
+        gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
+        vColor = aVertexColor;
+    }
 `;
 
 const fractalShaderSource = `
-void main() {
-    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);
-}
+    varying lowp vec4 vColor;
+
+    void main() {
+        gl_FragColor = vColor;
+    }
 `;
 
 
@@ -76,6 +83,7 @@ const programInfo = {
     program: shaderProgram,
     attribLocations: {
         vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+        vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
     },
     uniformLocations: {
         projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
@@ -110,8 +118,22 @@ function initBuffers(gl) {
                   new Float32Array(positions),
                   gl.STATIC_DRAW);
   
+    const colors = [
+        1.0, 1.0, 1.0, 1.0,
+        1.0, 0.0, 0.0, 1.0,
+        0.0, 1.0, 0.0, 1.0,
+        0.0, 0.0, 1.0, 1.0
+    ];
+
+    const colorBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
+    
+    
+
     return {
-      position: positionBuffer,
+        position: positionBuffer,
+        colors: colorBuffer,
     };
 }
 
@@ -166,6 +188,19 @@ function drawScene(gl, programInfo, buffers) {
             stride,
             offset
         );
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colors);
+        gl.vertexAttribPointer(
+            programInfo.attribLocations.vertexColor,
+            numComponents,
+            type,
+            normalize,
+            stride,
+            offset
+        );
+
+        gl.enableVertexAttribArray(programInfo.attribLocations.vertexColor)
+
         gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
     }
 
