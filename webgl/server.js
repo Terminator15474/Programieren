@@ -25,7 +25,6 @@ app.get('/:directory/:subdir/:file', (req, res) => {
     let file = req.params.file;
     let directory = req.params.directory;
     let subdir = req.params.subdir;
-    console.log(directory + "/" + subdir + "/" + file);
     res.sendFile(path + "/Programieren/webgl/" + directory + "/" + subdir + "/"+ file);
 });
 
