@@ -5,6 +5,7 @@ import {
     vec2, vec3, vec4,} from './toji-gl-matrix-v3.3.0-62-g8962b2e/src/index.js';
 import { str } from './toji-gl-matrix-v3.3.0-62-g8962b2e/src/mat2.js';
 
+let squareRotation = 0.0;
 
 /** @type {HTMLCanvasElement} */
 const canvas = document.getElementById("canvas1");
@@ -137,6 +138,7 @@ function initBuffers(gl) {
     };
 }
 
+
 /**
  * 
  * @param {WebGLRenderingContext} gl 
@@ -144,7 +146,7 @@ function initBuffers(gl) {
  * @param {Object} buffers 
  */
 
-function drawScene(gl, programInfo, buffers) {
+function drawScene(gl, programInfo, buffers, deltaTime) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST);
@@ -173,6 +175,14 @@ function drawScene(gl, programInfo, buffers) {
         modelViewMatrix,
         [0.0, 0.0, -6.0]
     );
+    
+    mat4.rotate(
+        modelViewMatrix,
+        modelViewMatrix,
+        squareRotation,
+        [0, 0, 1]
+    );
+    
     {
         const numComponents = 2;
         const type = gl.FLOAT;
@@ -182,7 +192,7 @@ function drawScene(gl, programInfo, buffers) {
         gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
         gl.vertexAttribPointer(
             programInfo.attribLocations.vertexPosition,
-            numComponents,
+            2,
             type,
             normalize,
             stride,
@@ -192,7 +202,7 @@ function drawScene(gl, programInfo, buffers) {
         gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colors);
         gl.vertexAttribPointer(
             programInfo.attribLocations.vertexColor,
-            numComponents,
+            4,
             type,
             normalize,
             stride,
@@ -205,12 +215,16 @@ function drawScene(gl, programInfo, buffers) {
     }
 
     gl.useProgram(programInfo.program);
+    
+    
 
     gl.uniformMatrix4fv(
         programInfo.uniformLocations.projectionMatrix,
         false,
         projectionMatrix
     );
+
+    squareRotation += deltaTime;
 
     gl.uniformMatrix4fv(
         programInfo.uniformLocations.modelViewMatrix,
@@ -223,7 +237,21 @@ function drawScene(gl, programInfo, buffers) {
         const vertexCount = 4;
         gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
     }
+
 }
 
+
 const buffers = initBuffers(gl);
-drawScene(gl, programInfo, buffers);
+
+let then = 0.0;
+
+function render(now) {
+    now *= 0.001;
+    const deltaTime = now - then;
+    then = now;
+
+    drawScene(gl, programInfo, buffers, deltaTime);
+
+    requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
