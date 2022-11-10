@@ -5,7 +5,7 @@ import {
     vec2, vec3, vec4,} from './toji-gl-matrix-v3.3.0-62-g8962b2e/src/index.js';
 import { str } from './toji-gl-matrix-v3.3.0-62-g8962b2e/src/mat2.js';
 
-let squareRotation = 0.0;
+let cubeRotation = 0.0;
 
 /** @type {HTMLCanvasElement} */
 const canvas = document.getElementById("canvas1");
@@ -105,11 +105,43 @@ function initBuffers(gl) {
     // Now create an array of positions for the square.
   
     const positions = [
-       1.0,  1.0,
-      -1.0,  1.0,
-       1.0, -1.0,
-      -1.0, -1.0,
-    ];
+        // Front face
+        -1.0, -1.0,  1.0,
+         1.0, -1.0,  1.0,
+         1.0,  1.0,  1.0,
+        -1.0,  1.0,  1.0,
+      
+        // Back face
+        -1.0, -1.0, -1.0,
+        -1.0,  1.0, -1.0,
+         1.0,  1.0, -1.0,
+         1.0, -1.0, -1.0,
+      
+        // Top face
+        -1.0,  1.0, -1.0,
+        -1.0,  1.0,  1.0,
+         1.0,  1.0,  1.0,
+         1.0,  1.0, -1.0,
+      
+        // Bottom face
+        -1.0, -1.0, -1.0,
+         1.0, -1.0, -1.0,
+         1.0, -1.0,  1.0,
+        -1.0, -1.0,  1.0,
+      
+        // Right face
+         1.0, -1.0, -1.0,
+         1.0,  1.0, -1.0,
+         1.0,  1.0,  1.0,
+         1.0, -1.0,  1.0,
+      
+        // Left face
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0,  1.0,
+        -1.0,  1.0,  1.0,
+        -1.0,  1.0, -1.0,
+      ];
+      
   
     // Now pass the list of positions into WebGL to build the
     // shape. We do this by creating a Float32Array from the
@@ -119,22 +151,46 @@ function initBuffers(gl) {
                   new Float32Array(positions),
                   gl.STATIC_DRAW);
   
-    const colors = [
-        1.0, 1.0, 1.0, 1.0,
-        1.0, 0.0, 0.0, 1.0,
-        0.0, 1.0, 0.0, 1.0,
-        0.0, 0.0, 1.0, 1.0
+    const faceColors = [
+        [1.0, 1.0, 1.0, 1.0],
+        [1.0, 0.0, 0.0, 1.0],
+        [0.0, 1.0, 0.0, 1.0],
+        [0.0, 0.0, 1.0, 1.0],
+        [1.0, 1.0, 0.0, 1.0]
+        [1.0, 0.0, 1.0, 1.0]
     ];
+
+    var colors = [];
+
+    for (var j = 0; j < faceColors.length; ++j) {
+        const c = faceColors[j];
+        // Repeat each color four times for the four vertices of the face
+        colors = colors.concat(c, c, c, c);
+    }
 
     const colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
     
-    
+    const indexBuffer = gl.createBuffer();
+
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+    const indices = [
+        0,  1,  2,      0,  2,  3,    // front
+        4,  5,  6,      4,  6,  7,    // back
+        8,  9,  10,     8,  10, 11,   // top
+        12, 13, 14,     12, 14, 15,   // bottom
+        16, 17, 18,     16, 18, 19,   // right
+        20, 21, 22,     20, 22, 23,   // left
+    ];
+   
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
     return {
         position: positionBuffer,
         colors: colorBuffer,
+        indices: indexBuffer,
     };
 }
 
@@ -179,20 +235,22 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
     mat4.rotate(
         modelViewMatrix,
         modelViewMatrix,
-        squareRotation,
-        [0, 0, 1]
+        cubeRotation * .7,
+        [0, 1, 0]
     );
     
     {
-        const numComponents = 2;
+        const numComponents = 3;
         const type = gl.FLOAT;
         const normalize = false;
         const stride = 0;
         const offset = 0;
+
         gl.bindBuffer(gl.ARRAY_BUFFER, buffers.position);
+
         gl.vertexAttribPointer(
             programInfo.attribLocations.vertexPosition,
-            2,
+            numComponents,
             type,
             normalize,
             stride,
@@ -200,6 +258,7 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
         );
 
         gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colors);
+
         gl.vertexAttribPointer(
             programInfo.attribLocations.vertexColor,
             4,
@@ -214,6 +273,8 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
         gl.enableVertexAttribArray(programInfo.attribLocations.vertexPosition);
     }
 
+    
+
     gl.useProgram(programInfo.program);
     
     
@@ -224,18 +285,21 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
         projectionMatrix
     );
 
-    squareRotation += deltaTime;
+    cubeRotation += deltaTime;
 
     gl.uniformMatrix4fv(
         programInfo.uniformLocations.modelViewMatrix,
         false,
         modelViewMatrix
     );
+    
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
 
     {
         const offset = 0;
-        const vertexCount = 4;
-        gl.drawArrays(gl.TRIANGLE_STRIP, offset, vertexCount);
+        const vertexCount = 36;
+        const type = gl.UNSIGNED_SHORT;
+        gl.drawElements(gl.TRIANGLES, vertexCount, type, offset);
     }
 
 }
