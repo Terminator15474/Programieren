@@ -92,6 +92,12 @@ const programInfo = {
     },
 };
 
+/**
+ * 
+ * @param {WebGLRenderingContext} gl 
+ * @returns 
+ */
+
 function initBuffers(gl) {
     // Create a buffer for the square's positions.
   
@@ -151,6 +157,7 @@ function initBuffers(gl) {
                   new Float32Array(positions),
                   gl.STATIC_DRAW);
   
+
     const faceColors = [
         [1.0, 1.0, 1.0, 1.0],
         [1.0, 0.0, 0.0, 1.0],
@@ -166,14 +173,15 @@ function initBuffers(gl) {
         const c = faceColors[j];
         // Repeat each color four times for the four vertices of the face
         colors = colors.concat(c, c, c, c);
+        console.log(colors);
     }
 
     const colorBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW);
     
-    const indexBuffer = gl.createBuffer();
 
+    const indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
     const indices = [
@@ -229,14 +237,28 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
     mat4.translate(
         modelViewMatrix,
         modelViewMatrix,
-        [0.0, 0.0, -6.0]
+        [-0.0, 0.0, -6.0]
     );
     
     mat4.rotate(
         modelViewMatrix,
         modelViewMatrix,
+        cubeRotation,
+        [0, 0, 1]
+    );
+
+    mat4.rotate(
+        modelViewMatrix,
+        modelViewMatrix,
         cubeRotation * .7,
         [0, 1, 0]
+    );
+
+    mat4.rotate(
+        modelViewMatrix,
+        modelViewMatrix,
+        cubeRotation * 0.3,
+        [1, 0, 0]
     );
     
     {
