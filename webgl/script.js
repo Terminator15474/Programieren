@@ -14,24 +14,27 @@ const gl = canvas.getContext("webgl");
 // Vertex shader program
 const vertexShaderSource = `
     attribute vec4 aVertexPosition;
-    attribute vec4 aVertexColor;
+    attribute vec4 aTextureCoord;
+
 
     uniform mat4 uModelViewMatrix;
     uniform mat4 uProjectionMatrix;
 
-    varying lowp vec4 vColor;
+    varying lowp vec4 vTextureCoord;
 
     void main() {
         gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
-        vColor = aVertexColor;
+        vTextureCoord = aTextureCoord;
     }
 `;
 
 const fractalShaderSource = `
-    varying lowp vec4 vColor;
+    varying lowp vec4 vTextureCoord;
+
+    uniform sampler2D uSampler;
 
     void main() {
-        gl_FragColor = vColor;
+        gl_FragColor = texture2D(uSampler, vTextureCoord);
     }
 `;
 
@@ -84,11 +87,12 @@ const programInfo = {
     program: shaderProgram,
     attribLocations: {
         vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-        vertexColor: gl.getAttribLocation(shaderProgram, 'aVertexColor'),
+        vertexColor: gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
     },
     uniformLocations: {
         projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
         modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+        uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
     },
 };
 
@@ -195,9 +199,47 @@ function initBuffers(gl) {
    
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
 
+
+    const textureCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
+    const textureCoordinates = [
+        // Front
+        0.0,  0.0,
+        1.0,  0.0,
+        1.0,  1.0,
+        0.0,  1.0,
+        // Back
+        0.0,  0.0,
+        1.0,  0.0,
+        1.0,  1.0,
+        0.0,  1.0,
+        // Top
+        0.0,  0.0,
+        1.0,  0.0,
+        1.0,  1.0,
+        0.0,  1.0,
+        // Bottom
+        0.0,  0.0,
+        1.0,  0.0,
+        1.0,  1.0,
+        0.0,  1.0,
+        // Right
+        0.0,  0.0,
+        1.0,  0.0,
+        1.0,  1.0,
+        0.0,  1.0,
+        // Left
+        0.0,  0.0,
+        1.0,  0.0,
+        1.0,  1.0,
+        0.0,  1.0,
+    ];
+
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordBuffer), gl.STATIC_DRAW);
+
     return {
         position: positionBuffer,
-        colors: colorBuffer,
+        textureCoord: textureCoordBuffer,
         indices: indexBuffer,
     };
 }
@@ -210,7 +252,7 @@ function initBuffers(gl) {
  * @param {Object} buffers 
  */
 
-function drawScene(gl, programInfo, buffers, deltaTime) {
+function drawScene(gl, programInfo, buffers, deltaTime, texture) {
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST);
@@ -283,29 +325,24 @@ function drawScene(gl, programInfo, buffers, deltaTime) {
     }
 
     {
-        const numComponents = 4;
+        const num = 2;
         const type = gl.FLOAT;
         const normalize = false;
         const stride = 0;
         const offset = 0;
-        
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.colors);
-
-        gl.vertexAttribPointer(
-            programInfo.attribLocations.vertexColor,
-            numComponents,
-            type,
-            normalize,
-            stride,
-            offset
-        );
-
-        gl.enableVertexAttribArray(programInfo.attribLocations.vertexColor)
+        gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureCoord);
+        gl.vertexAttribPointer(programInfo.attribLocations.textureCoord, num, type, normalize, stride, offset);
+        gl.enableVertexAttribArray(programInfo.attribLocations.textureCoord);
     }
 
 
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);    
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
+
+        
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+
 
     gl.useProgram(programInfo.program);
     
@@ -397,7 +434,7 @@ function render(now) {
     const deltaTime = now - then;
     then = now;
 
-    drawScene(gl, programInfo, buffers, deltaTime);
+    drawScene(gl, programInfo, buffers, deltaTime, texture);
 
     requestAnimationFrame(render);
 }
