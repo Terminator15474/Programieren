@@ -21,10 +21,10 @@ app.get('/:file', (req, res) => {
     res.sendFile(path + "/Programieren/webgl/" + file);
 });
 
-app.get('/abs/:path', (req, res) => {
+app.get('/image/:path', (req, res) => {
     let l_path = req.params.path;
     console.log(path+l_path);
-    res.sendFile(path + l_path);
+    res.sendFile(path + "/Programieren/html_canvas_effects/images/" + l_path);
 });
 
 app.get('/:directory/:subdir/:file', (req, res) => {

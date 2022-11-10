@@ -423,7 +423,7 @@ function isPowerOf2(value) {
 
 const buffers = initBuffers(gl);
 
-const texture = loadTexture(gl, "abs/programieren/html_canvas_effects/images/angler.png");
+const texture = loadTexture(gl, "https://www.startpage.com/av/proxy-image?piurl=https%3A%2F%2Fencrypted-tbn0.gstatic.com%2Fimages%3Fq%3Dtbn%3AANd9GcSz5S91mZmVspLVWwJkYF-EPfCv_USKHDgjRv1Ar4xlMQNB0g%26s&sp=1668091445Tb38d7a4069184fccd5f80beaa0005900aaa1d2e85dd7f4df07f8f113f6ec63d3");
 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
 let then = 0.0;
