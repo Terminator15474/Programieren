@@ -14,13 +14,13 @@ const gl = canvas.getContext("webgl");
 // Vertex shader program
 const vertexShaderSource = `
     attribute vec4 aVertexPosition;
-    attribute vec4 aTextureCoord;
+    attribute vec2 aTextureCoord;
 
 
     uniform mat4 uModelViewMatrix;
     uniform mat4 uProjectionMatrix;
 
-    varying lowp vec4 vTextureCoord;
+    varying highp vec2 vTextureCoord;
 
     void main() {
         gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
@@ -28,8 +28,8 @@ const vertexShaderSource = `
     }
 `;
 
-const fractalShaderSource = `
-    varying lowp vec4 vTextureCoord;
+const fragmentShaderSource = `
+    varying highp vec2 vTextureCoord;
 
     uniform sampler2D uSampler;
 
@@ -81,7 +81,7 @@ function initShaderProgram(gl, vsSource, fsSource) {
     return shaderProgram;
 }
 
-const shaderProgram = initShaderProgram(gl, vertexShaderSource, fractalShaderSource);
+const shaderProgram = initShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
 
 const programInfo = {
     program: shaderProgram,
@@ -177,7 +177,6 @@ function initBuffers(gl) {
         const c = faceColors[j];
         // Repeat each color four times for the four vertices of the face
         colors = colors.concat(c, c, c, c);
-        console.log(colors);
     }
 
     const colorBuffer = gl.createBuffer();
@@ -331,7 +330,6 @@ function drawScene(gl, programInfo, buffers, deltaTime, texture) {
         const stride = 0;
         const offset = 0;
         gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureCoord);
-        console.log(programInfo.attribLocations.textureCoord);
         gl.vertexAttribPointer(programInfo.attribLocations.textureCoord, num, type, normalize, stride, offset);
         gl.enableVertexAttribArray(programInfo.attribLocations.textureCoord);
     }

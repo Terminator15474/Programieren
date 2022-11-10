@@ -23,6 +23,7 @@ app.get('/:file', (req, res) => {
 
 app.get('/abs/:path', (req, res) => {
     let l_path = req.params.path;
+    console.log(path+l_path);
     res.sendFile(path + l_path);
 });
 
