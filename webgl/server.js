@@ -21,6 +21,11 @@ app.get('/:file', (req, res) => {
     res.sendFile(path + "/Programieren/webgl/" + file);
 });
 
+app.get('/abs/:path', (req, res) => {
+    let l_path = req.params.path;
+    res.sendFile(path + l_path);
+});
+
 app.get('/:directory/:subdir/:file', (req, res) => {
     let file = req.params.file;
     let directory = req.params.directory;
