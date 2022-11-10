@@ -87,7 +87,7 @@ const programInfo = {
     program: shaderProgram,
     attribLocations: {
         vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-        vertexColor: gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
+        textureCoord: gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
     },
     uniformLocations: {
         projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
@@ -331,6 +331,7 @@ function drawScene(gl, programInfo, buffers, deltaTime, texture) {
         const stride = 0;
         const offset = 0;
         gl.bindBuffer(gl.ARRAY_BUFFER, buffers.textureCoord);
+        console.log(programInfo.attribLocations.textureCoord);
         gl.vertexAttribPointer(programInfo.attribLocations.textureCoord, num, type, normalize, stride, offset);
         gl.enableVertexAttribArray(programInfo.attribLocations.textureCoord);
     }
