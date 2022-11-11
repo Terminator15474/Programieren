@@ -76,8 +76,8 @@ int main(int args, char* argv[]) {
 	
 	int reading_index = 0;
 	while(reading_index < file_size) {
-		buffer[reading_index] = fgetc(input_file);
-		reading_index++;
+	    buffer[reading_index] = fgetc(input_file);
+        reading_index++;
 	}
 
 	printf("\nRead: %s \n Lenght: %i", buffer, strlen(buffer));
@@ -134,7 +134,7 @@ int main(int args, char* argv[]) {
 		for(i=0; i < file_size; i++) {
 			
 			char temp_xor =  (buffer[i] ^ key[i]);
-			if(temp_xor != 0b11111111) {
+			if(temp_xor != -1) {
 				output[i] = temp_xor;
 				printf("\n%2i: key: %c output: %c ", i, key[i], output[i]);
 				
