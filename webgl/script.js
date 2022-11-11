@@ -411,7 +411,7 @@ function loadTexture(gl, url) {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         }
     };
-
+    requestCORSIfNotSameOrigin(image, url)
     image.src = url;
 
     return texture;
@@ -421,9 +421,15 @@ function isPowerOf2(value) {
     return (value & (value - 1)) === 0;
 }
 
+function requestCORSIfNotSameOrigin(img, url) {
+    if ((new URL(url, window.location.href)).origin !== window.location.origin) {
+        img.crossOrigin = "";
+    }
+  }
+
 const buffers = initBuffers(gl);
 
-const texture = loadTexture(gl, "https://www.startpage.com/av/proxy-image?piurl=https%3A%2F%2Fencrypted-tbn0.gstatic.com%2Fimages%3Fq%3Dtbn%3AANd9GcSz5S91mZmVspLVWwJkYF-EPfCv_USKHDgjRv1Ar4xlMQNB0g%26s&sp=1668091445Tb38d7a4069184fccd5f80beaa0005900aaa1d2e85dd7f4df07f8f113f6ec63d3");
+const texture = loadTexture(gl, "./image/Angler.png");
 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
 let then = 0.0;
