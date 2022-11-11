@@ -9,6 +9,8 @@ let cubeRotation = 0.0;
 
 /** @type {HTMLCanvasElement} */
 const canvas = document.getElementById("canvas1");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 const gl = canvas.getContext("webgl");
 
 
@@ -24,7 +26,7 @@ const vertexShaderSource = `
 
     varying highp vec2 vTextureCoord;
 
-    void main() {
+    void main(void) {
         gl_Position = uProjectionMatrix * uModelViewMatrix * aVertexPosition;
         vTextureCoord = aTextureCoord;
     }
@@ -35,7 +37,7 @@ const fragmentShaderSource = `
 
     uniform sampler2D uSampler;
 
-    void main() {
+    void main(void) {
         gl_FragColor = texture2D(uSampler, vTextureCoord);
     }
 `;
