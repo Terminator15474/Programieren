@@ -59,7 +59,7 @@ const programInfo = {
 
 const buffers = initBuffers(gl);
 
-const texture = loadTexture(gl, "./image/Angler.png");
+const texture = loadTexture(gl, "./image/cubetexture.png");
 gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
 
 let then = 0.0;
@@ -86,16 +86,13 @@ function loadShader(gl, type, source) {
         return null;
     }
   
-    
-
-    console.log(gl.getShaderInfoLog(shader));
     return shader;
 }
 
 function initShaderProgram(gl, vsSource, fsSource) {
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
     const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
-    
+
     // Create the shader program
   
     const shaderProgram = gl.createProgram();
@@ -110,8 +107,6 @@ function initShaderProgram(gl, vsSource, fsSource) {
         console.log(`Unable to initialize the shader program: ${gl.getProgramInfoLog(shaderProgram)}`);
         return null;
     }
-
-    console.log(gl.getProgramInfoLog(shaderProgram));
 
     return shaderProgram;
 }
@@ -426,7 +421,7 @@ function loadTexture(gl, url) {
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, image);
 
-        if(isPowerOf2(gl.width) && isPowerOf2(image.height)) {
+        if(isPowerOf2(image.width) && isPowerOf2(image.height)) {
             gl.generateMipmap(gl.TEXTURE_2D);
         } else {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
