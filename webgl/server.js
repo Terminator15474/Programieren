@@ -23,7 +23,6 @@ app.get('/:file', (req, res) => {
 
 app.get('/image/:path', (req, res) => {
     let l_path = req.params.path;
-    console.log(path+l_path);
     res.sendFile(path + "/Programieren/html_canvas_effects/images/" + l_path);
 });
 

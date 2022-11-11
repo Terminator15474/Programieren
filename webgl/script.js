@@ -11,6 +11,8 @@ let cubeRotation = 0.0;
 const canvas = document.getElementById("canvas1");
 const gl = canvas.getContext("webgl");
 
+
+
 // Vertex shader program
 const vertexShaderSource = `
     attribute vec4 aVertexPosition;
@@ -39,6 +41,32 @@ const fragmentShaderSource = `
 `;
 
 
+const shaderProgram = initShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
+
+const programInfo = {
+    program: shaderProgram,
+    attribLocations: {  
+        vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+        textureCoord: gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
+    },
+    uniformLocations: {
+        projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
+        modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
+        uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
+    },
+};
+
+
+const buffers = initBuffers(gl);
+
+const texture = loadTexture(gl, "./image/Angler.png");
+gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+
+let then = 0.0;
+
+requestAnimationFrame(render);
+
+
 function loadShader(gl, type, source) {
     const shader = gl.createShader(type);
   
@@ -58,13 +86,16 @@ function loadShader(gl, type, source) {
         return null;
     }
   
+    
+
+    console.log(gl.getShaderInfoLog(shader));
     return shader;
 }
 
 function initShaderProgram(gl, vsSource, fsSource) {
     const vertexShader = loadShader(gl, gl.VERTEX_SHADER, vsSource);
     const fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fsSource);
-  
+    
     // Create the shader program
   
     const shaderProgram = gl.createProgram();
@@ -76,25 +107,15 @@ function initShaderProgram(gl, vsSource, fsSource) {
   
     if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
         alert(`Unable to initialize the shader program: ${gl.getProgramInfoLog(shaderProgram)}`);
+        console.log(`Unable to initialize the shader program: ${gl.getProgramInfoLog(shaderProgram)}`);
         return null;
     }
+
+    console.log(gl.getProgramInfoLog(shaderProgram));
+
     return shaderProgram;
 }
 
-const shaderProgram = initShaderProgram(gl, vertexShaderSource, fragmentShaderSource);
-
-const programInfo = {
-    program: shaderProgram,
-    attribLocations: {
-        vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
-        textureCoord: gl.getAttribLocation(shaderProgram, 'aTextureCoord'),
-    },
-    uniformLocations: {
-        projectionMatrix: gl.getUniformLocation(shaderProgram, 'uProjectionMatrix'),
-        modelViewMatrix: gl.getUniformLocation(shaderProgram, 'uModelViewMatrix'),
-        uSampler: gl.getUniformLocation(shaderProgram, 'uSampler'),
-    },
-};
 
 /**
  * 
@@ -337,11 +358,6 @@ function drawScene(gl, programInfo, buffers, deltaTime, texture) {
 
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffers.indices);
 
-        
-    gl.activeTexture(gl.TEXTURE0);
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
-
 
     gl.useProgram(programInfo.program);
     
@@ -359,6 +375,13 @@ function drawScene(gl, programInfo, buffers, deltaTime, texture) {
         false,
         modelViewMatrix
     );
+
+    
+        
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.uniform1i(programInfo.uniformLocations.uSampler, 0);
+
     
 
     {
@@ -427,12 +450,6 @@ function requestCORSIfNotSameOrigin(img, url) {
     }
   }
 
-const buffers = initBuffers(gl);
-
-const texture = loadTexture(gl, "./image/Angler.png");
-gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-
-let then = 0.0;
 
 function render(now) {
     now *= 0.001;
@@ -443,4 +460,3 @@ function render(now) {
 
     requestAnimationFrame(render);
 }
-requestAnimationFrame(render);
