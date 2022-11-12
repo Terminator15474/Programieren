@@ -7,12 +7,12 @@
 //Check headers for png
 void checkHeadersPNG(char* buffer) {
     if((unsigned char) buffer[0] != 0x89) {
-        printf("error header byte 1");
+        printf("error header byte 1\n");
         exit(1);
     }
 
     if(! (unsigned char) buffer[1] == 'P' ) {
-        printf("error header byte 2");
+        printf("error header byte 2\n");
         exit(1);
     }
 }
@@ -26,7 +26,8 @@ int get_big_endian(const char *buf) {
 
 int main(int argc, char** argv) {
     if(argc != 2) {
-        printf("Usage %s <png file>", argv[0]);
+        printf("Usage %s <png file>\n", argv[0]);
+        exit(1);
     }
 
     FILE* input = fopen(argv[1], "r");
@@ -35,7 +36,6 @@ int main(int argc, char** argv) {
         exit(1);
     }
     char* buf = (char *) malloc(MAX_SIZE);
-    printf("buffer size: %d - max_length: %d, buffer: %s\n", sizeof(buf), MAX_SIZE,buf);
     int size = fread(buf, 1, MAX_SIZE, input);
 
     if( size < 0) {
@@ -44,22 +44,22 @@ int main(int argc, char** argv) {
     }
 
     checkHeadersPNG(buf);
-    // Current output: chunk: ‼¸ -len: -1991225785 (1991225778)
-    int pos = 0;
-    printf("size: %i", size);
-    while(pos < size) {
+
+    int pos = 8;
+    printf("size: %i\n", size);
+    while(1) {
         char lenbuf[4];
         memcpy(lenbuf, buf + pos, 4);
         pos +=4;
         int len = get_big_endian(lenbuf);
-        char chunkbuf[5];
-        memcpy(chunkbuf, buf+pos, 4);
-        pos+=4;
+        char chunktype[4];
+        memcpy(chunktype, buf + pos, 4);
+        char chunkbuf[len];
+        memcpy(chunkbuf, buf + pos, len);
+        pos+=len;
 
         printf("chunk: %s -len: %d (%d)\n", chunkbuf, len, size - (pos + len + 12));
     }
-
-
 
     fclose(input);
     free(buf);
