@@ -47,23 +47,22 @@ int main(int argc, char** argv) {
     checkHeadersPNG(buf);
 
     int pos = 8;
-    printf("size: %i\n", size);
     while(pos < size) {
         char lenbuf[4];
         memcpy(lenbuf, buf + pos, 4);
         pos +=4;
         int len = get_big_endian(lenbuf);
         char chunktype[4];
-        printf("hello\n");
         memcpy(chunktype, buf + pos, 4);
         char chunkbuf[len];
+        pos += 4;
         memcpy(chunkbuf, buf + pos, len);
         pos+=len;
         char crcbuf[4];
         memcpy(crcbuf, buf+pos, 4);
         pos+=4;
 
-        printf("chunk: %s - len: %d (%d) type: %d\n", chunkbuf, len, size - (pos + len + 12), chunktype);
+        printf("chunk: %s - len: %d (%d)\n", chunktype, len, size - (pos + len + 12));
     }
 
     fclose(input);
