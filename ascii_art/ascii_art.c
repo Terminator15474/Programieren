@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_SIZE (16*1024*1025)
+#define MAX_SIZE ( 16 * 1024 * 1024 )
 
 //Check headers for png
 void checkHeadersPNG(char* buffer) {
@@ -34,7 +34,8 @@ int main(int argc, char** argv) {
         printf("error: file not readable");
         exit(1);
     }
-    char* buf = (char *) calloc(MAX_SIZE, 1);
+    char* buf = (char *) malloc(MAX_SIZE);
+    printf("buffer size: %d - max_length: %d, buffer: %s\n", sizeof(buf), MAX_SIZE,buf);
     int size = fread(buf, 1, MAX_SIZE, input);
 
     if( size < 0) {
