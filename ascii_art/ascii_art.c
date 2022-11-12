@@ -4,7 +4,8 @@
 
 #define MAX_SIZE (16*1024*1025)
 
-void checkHeaders(char* buffer) {
+//Check headers for png
+void checkHeadersPNG(char* buffer) {
     if((unsigned char) buffer[0] != 0x89) {
         printf("error header byte 1");
         exit(1);
@@ -14,6 +15,13 @@ void checkHeaders(char* buffer) {
         printf("error header byte 2");
         exit(1);
     }
+}
+
+int get_big_endian(const char *buf) {
+    return ((unsigned char)buf[0] << 24) |
+           ((unsigned char)buf[1] << 16) |
+           ((unsigned char)buf[2] << 8)  |
+            (unsigned char)buf[3];
 }
 
 int main(int argc, char** argv) {
@@ -34,7 +42,24 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
-    checkHeaders(buf);
+    checkHeadersPNG(buf);
+    // Current output: chunk: ‼¸ -len: -1991225785 (1991225778)
+    int pos = 0;
+    printf("size: %i", size);
+    while(pos < size) {
+        char lenbuf[4];
+        memcpy(lenbuf, buf + pos, 4);
+        pos +=4;
+        int len = get_big_endian(lenbuf);
+        char chunkbuf[5];
+        memcpy(chunkbuf, buf+pos, 4);
+        pos+=4;
+
+        printf("chunk: %s -len: %d (%d)\n", chunkbuf, len, size - (pos + len + 12));
+    }
+
+
+
     fclose(input);
     free(buf);
     return 0;
