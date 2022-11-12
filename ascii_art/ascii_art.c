@@ -10,7 +10,7 @@ void checkHeaders(char* buffer) {
         exit(1);
     }
 
-    if( (unsigned char) buffer[1] == 'P' ) {
+    if(! (unsigned char) buffer[1] == 'P' ) {
         printf("error header byte 2");
         exit(1);
     }
