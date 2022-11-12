@@ -4,6 +4,16 @@
 
 #define MAX_SIZE ( 16 * 1024 * 1024 )
 
+struct header {
+    int width;
+    int height;
+    char bit_depth;
+    char color_type;
+    char compression_method;
+    char filter_method;
+    char interlace_method;
+} header;
+
 //Check headers for png
 void checkHeadersPNG(char* buffer) {
     if((unsigned char) buffer[0] != 0x89) {
@@ -46,6 +56,8 @@ int main(int argc, char** argv) {
 
     checkHeadersPNG(buf);
 
+    struct header png_header;
+
     int pos = 8;
     while(pos < size) {
         char lenbuf[4];
@@ -62,9 +74,23 @@ int main(int argc, char** argv) {
         memcpy(crcbuf, buf+pos, 4);
         pos+=4;
 
-        printf("chunk: %s - len: %d (%d)\n", chunktype, len, size - (pos + len + 12));
-    }
+        if( strcmp("IHDR", chunktype) == 0) {
+            printf("test");
+            png_header.width = get_big_endian(chunkbuf);
+            png_header.height = get_big_endian(chunkbuf+4);
+            png_header.bit_depth = chunkbuf[8];
+            png_header.color_type = chunkbuf[9];
+            png_header.compression_method = chunkbuf[10];
+            png_header.filter_method = chunkbuf[11];
+            png_header.interlace_method = chunkbuf[12];
+        }
 
+        if( strcmp("PLTE", chunktype) == 0) {
+            
+
+        }
+    }
+    printf("width: %i, height: %i, bit_depth: %i, color_type: %i, compression_method: %i, filter_method: %i, interlace_method: %i", png_header.width, png_header.height, png_header.bit_depth, png_header.color_type, png_header.compression_method, png_header.filter_method, png_header.interlace_method);
     fclose(input);
     free(buf);
     return 0;
