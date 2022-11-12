@@ -64,6 +64,8 @@ int main(int argc, char** argv) {
 
     struct header png_header;
 
+    char data[size];
+
     int pos = 8;
     while(pos < size) {
         char lenbuf[4];
@@ -100,7 +102,11 @@ int main(int argc, char** argv) {
 
                 printf("red: %i, green: %i, blue %i\n", paletts[i].red, paletts[i].blue, paletts[i].blue);
             }
+            printf("i: %i", i);
+        }
 
+        if(strcmp("IDAT", chunktype) == 0) {
+            strcat(data, chunkbuf);
         }
     }
     printf("width: %i, height: %i, bit_depth: %i, color_type: %i, compression_method: %i, filter_method: %i, interlace_method: %i", png_header.width, png_header.height, png_header.bit_depth, png_header.color_type, png_header.compression_method, png_header.filter_method, png_header.interlace_method);
