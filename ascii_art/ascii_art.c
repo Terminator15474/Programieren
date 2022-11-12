@@ -30,13 +30,14 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
-    FILE* input = fopen(argv[1], "r");
+    FILE* input = fopen(argv[1], "rb");
     if(!input) {
         printf("error: file not readable");
         exit(1);
     }
     char* buf = (char *) malloc(MAX_SIZE);
-    int size = fread(buf, 1, MAX_SIZE, input);
+
+    int size = fread(buf, sizeof(char), MAX_SIZE, input);
 
     if( size < 0) {
         printf("error: empty file");
@@ -47,18 +48,22 @@ int main(int argc, char** argv) {
 
     int pos = 8;
     printf("size: %i\n", size);
-    while(1) {
+    while(pos < size) {
         char lenbuf[4];
         memcpy(lenbuf, buf + pos, 4);
         pos +=4;
         int len = get_big_endian(lenbuf);
         char chunktype[4];
+        printf("hello\n");
         memcpy(chunktype, buf + pos, 4);
         char chunkbuf[len];
         memcpy(chunkbuf, buf + pos, len);
         pos+=len;
+        char crcbuf[4];
+        memcpy(crcbuf, buf+pos, 4);
+        pos+=4;
 
-        printf("chunk: %s -len: %d (%d)\n", chunkbuf, len, size - (pos + len + 12));
+        printf("chunk: %s - len: %d (%d) type: %d\n", chunkbuf, len, size - (pos + len + 12), chunktype);
     }
 
     fclose(input);
