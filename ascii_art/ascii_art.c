@@ -14,6 +14,12 @@ struct header {
     char interlace_method;
 } header;
 
+struct plte_palette {
+    unsigned char red;
+    unsigned char green;
+    unsigned char blue;
+} plte_palette;
+
 //Check headers for png
 void checkHeadersPNG(char* buffer) {
     if((unsigned char) buffer[0] != 0x89) {
@@ -75,7 +81,6 @@ int main(int argc, char** argv) {
         pos+=4;
 
         if( strcmp("IHDR", chunktype) == 0) {
-            printf("test");
             png_header.width = get_big_endian(chunkbuf);
             png_header.height = get_big_endian(chunkbuf+4);
             png_header.bit_depth = chunkbuf[8];
@@ -86,7 +91,15 @@ int main(int argc, char** argv) {
         }
 
         if( strcmp("PLTE", chunktype) == 0) {
-            
+            int i;
+            struct plte_palette paletts[len/3];
+            for (i = 0; i < len/3; i++) {
+                paletts[i].red = chunkbuf[i*3];
+                paletts[i].green = chunkbuf[i * 3 + 1];
+                paletts[i].blue = chunkbuf[i * 3 + 2];
+
+                printf("red: %i, green: %i, blue %i\n", paletts[i].red, paletts[i].blue, paletts[i].blue);
+            }
 
         }
     }
