@@ -41,6 +41,27 @@ int get_big_endian(const char *buf) {
             (unsigned char)buf[3];
 }
 
+char* inflateData(char* input_data, int size) {
+    char output[size];
+    z_stream stream;
+
+    stream.zalloc = Z_NULL;
+    stream.zfree = Z_NULL;
+    stream.opaque = Z_NULL;
+    stream.avail_in = 0;
+    stream.next_in = Z_NULL;
+    if(inflateInit(&stream) != Z_OK) {
+        stream.avail_in = size;
+        stream.next_in = input_data;
+        stream.avail_out = size;
+        stream.next_out = output;
+        inflate(&stream, Z_NO_FLUSH);
+        (void)inflateEnd(&stream);
+
+    }
+    return output;
+}
+
 int main(int argc, char** argv) {
     if(argc != 2) {
         printf("Usage %s <png file>\n", argv[0]);
@@ -112,6 +133,8 @@ int main(int argc, char** argv) {
             char compressed_data[len-6];
             strcpy(compressed_data, chunkbuf+2);
             int check_value = get_big_endian(chunkbuf+len-2);
+            char* true_data = inflateData(compressed_data);
+
             printf("compression_method: %d, flags: %d, compressed_data: %s, check_value: %i\n", compression_method, flags, compressed_data, check_value);
         }
     }
