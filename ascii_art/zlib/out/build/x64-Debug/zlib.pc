@@ -1,0 +1,13 @@
+prefix=A:/Programieren/ascii_art/zlib/out/install/x64-Debug
+exec_prefix=A:/Programieren/ascii_art/zlib/out/install/x64-Debug
+libdir=A:/Programieren/ascii_art/zlib/out/install/x64-Debug/lib
+sharedlibdir=A:/Programieren/ascii_art/zlib/out/install/x64-Debug/lib
+includedir=A:/Programieren/ascii_art/zlib/out/install/x64-Debug/include
+
+Name: zlib
+Description: zlib compression library
+Version: 1.2.13
+
+Requires:
+Libs: -L${libdir} -L${sharedlibdir} -lz
+Cflags: -I${includedir}

@@ -1,0 +1,13 @@
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/minigzip64.dir
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/zlib.dir
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/zlibstatic.dir
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/example.dir
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/minigzip.dir
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/example64.dir
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/test.dir
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/list_install_components.dir
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/install/local.dir
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/install.dir
+A:/Programieren/ascii_art/zlib/out/build/x64-Debug/CMakeFiles/install/strip.dir

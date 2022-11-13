@@ -41,7 +41,7 @@ TAR=tar
 SHELL=/bin/sh
 EXE=.exe
 
-prefix =/usr/local
+prefix =A:/Programieren/ascii_art/zlib/
 exec_prefix =${prefix}
 libdir =${exec_prefix}/lib
 sharedlibdir =${libdir}
