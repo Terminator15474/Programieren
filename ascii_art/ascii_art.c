@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "zlib/zlib.h"
 
 #define MAX_SIZE ( 16 * 1024 * 1024 )
 
@@ -106,6 +107,7 @@ int main(int argc, char** argv) {
         }
 
         if(strcmp("IDAT", chunktype) == 0) {
+            
             strcat(data, chunkbuf);
         }
     }
