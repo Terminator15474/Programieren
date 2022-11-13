@@ -60,6 +60,7 @@ int inflateData(char* input_data, char* outputbuf, int size) {
         stream.next_out = outputbuf;
         do {
             ret = inflate(&stream, Z_NO_FLUSH);
+            printf("inflated %i bytes , output %i bytes", stream.total_in, stream.total_out);
             (void)inflateEnd(&stream);
             printf("return value: %i\n", ret);
             switch (ret) {
