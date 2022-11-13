@@ -107,8 +107,12 @@ int main(int argc, char** argv) {
         }
 
         if(strcmp("IDAT", chunktype) == 0) {
-            
-            strcat(data, chunkbuf);
+            char compression_method = chunkbuf[0];
+            char flags = chunkbuf[1];
+            char compressed_data[len-6];
+            strcpy(compressed_data, chunkbuf+2);
+            int check_value = get_big_endian(chunkbuf+len-2);
+            printf("compression_method: %d, flags: %d, compressed_data: %s, check_value: %i\n", compression_method, flags, compressed_data, check_value);
         }
     }
     printf("width: %i, height: %i, bit_depth: %i, color_type: %i, compression_method: %i, filter_method: %i, interlace_method: %i", png_header.width, png_header.height, png_header.bit_depth, png_header.color_type, png_header.compression_method, png_header.filter_method, png_header.interlace_method);
