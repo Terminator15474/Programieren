@@ -42,7 +42,7 @@ int get_big_endian(const char *buf) {
 }
 
 char* inflateData(char* input_data, int size) {
-    char output[size];
+    char* output = malloc(size);
     z_stream stream;
 
     stream.zalloc = Z_NULL;
@@ -57,7 +57,6 @@ char* inflateData(char* input_data, int size) {
         stream.next_out = output;
         inflate(&stream, Z_NO_FLUSH);
         (void)inflateEnd(&stream);
-
     }
     return output;
 }
@@ -133,7 +132,7 @@ int main(int argc, char** argv) {
             char compressed_data[len-6];
             strcpy(compressed_data, chunkbuf+2);
             int check_value = get_big_endian(chunkbuf+len-2);
-            char* true_data = inflateData(compressed_data);
+            char* true_data = inflateData(compressed_data, len-6);
 
             printf("compression_method: %d, flags: %d, compressed_data: %s, check_value: %i\n", compression_method, flags, compressed_data, check_value);
         }
