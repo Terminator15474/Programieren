@@ -41,8 +41,7 @@ int get_big_endian(const char *buf) {
             (unsigned char)buf[3];
 }
 
-char* inflateData(char* input_data, int size) {
-    char* output = malloc(size);
+int inflateData(char* input_data, char* outputbuf, int size) {
     z_stream stream;
 
     stream.zalloc = Z_NULL;
@@ -50,15 +49,31 @@ char* inflateData(char* input_data, int size) {
     stream.opaque = Z_NULL;
     stream.avail_in = 0;
     stream.next_in = Z_NULL;
-    if(inflateInit(&stream) != Z_OK) {
+    int ret = inflateInit(&stream);
+    if(ret == Z_OK) {
+        printf("inflateInit successful\n");
         stream.avail_in = size;
         stream.next_in = input_data;
         stream.avail_out = size;
-        stream.next_out = output;
-        inflate(&stream, Z_NO_FLUSH);
+        stream.next_out = outputbuf;
+        ret = inflate(&stream, Z_NO_FLUSH);
         (void)inflateEnd(&stream);
+        printf("return value: %i\n", ret);
+        switch (ret) {
+            case Z_NEED_DICT:
+                ret = Z_DATA_ERROR;
+                printf("error when inflating, error %i\n", ret);
+            case Z_DATA_ERROR:
+                printf("error when inflating, error Z_DATA_ERROR\n");
+            case Z_MEM_ERROR:
+                (void)inflateEnd(&stream);
+                printf("error when inflating, error %i\n", ret);
+                return ret;
+        }
+    } else {
+        printf("inflateInit failed, error: %i\n", ret);
+        return ret;
     }
-    return output;
 }
 
 int main(int argc, char** argv) {
@@ -127,14 +142,9 @@ int main(int argc, char** argv) {
         }
 
         if(strcmp("IDAT", chunktype) == 0) {
-            char compression_method = chunkbuf[0];
-            char flags = chunkbuf[1];
-            char compressed_data[len-6];
-            strcpy(compressed_data, chunkbuf+2);
-            int check_value = get_big_endian(chunkbuf+len-2);
-            char* true_data = inflateData(compressed_data, len-6);
-
-            printf("compression_method: %d, flags: %d, compressed_data: %s, check_value: %i\n", compression_method, flags, compressed_data, check_value);
+            char* true_data = malloc(len);
+            inflateData(chunkbuf, true_data, len);
+            printf("data: %s\n", true_data);
         }
     }
     printf("width: %i, height: %i, bit_depth: %i, color_type: %i, compression_method: %i, filter_method: %i, interlace_method: %i", png_header.width, png_header.height, png_header.bit_depth, png_header.color_type, png_header.compression_method, png_header.filter_method, png_header.interlace_method);
