@@ -1,0 +1,10 @@
+^A:\PROGRAMIEREN\ASCII_ART\ZLIB_BUILD\CMAKEFILES\2C51E99E24451B1BDF34274B34FFA702\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SA:/Programieren/ascii_art/zlib -BA:/Programieren/ascii_art/zlib_build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file A:/Programieren/ascii_art/zlib_build/zlib.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

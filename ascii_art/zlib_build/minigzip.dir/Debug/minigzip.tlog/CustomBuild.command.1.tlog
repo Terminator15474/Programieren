@@ -1,0 +1,10 @@
+^A:\PROGRAMIEREN\ASCII_ART\ZLIB\CMAKELISTS.TXT
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SA:/Programieren/ascii_art/zlib -BA:/Programieren/ascii_art/zlib_build --check-stamp-file A:/Programieren/ascii_art/zlib_build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
