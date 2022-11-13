@@ -43,54 +43,6 @@ int get_big_endian(const char *buf) {
             (unsigned char)buf[3];
 }
 
-int inf(char* source, char* dest, int size) {
-    int ret;
-    unsigned have;
-    z_stream strm;
-    unsigned char in[CHUNK];
-    unsigned char out[CHUNK];
-
-    /* allocate inflate state */
-    strm.zalloc = Z_NULL;
-    strm.zfree = Z_NULL;
-    strm.opaque = Z_NULL;
-    strm.avail_in = 0;
-    strm.next_in = Z_NULL;
-    ret = inflateInit(&strm);
-    if (ret != Z_OK)
-        return ret;
-
-    /* decompress until deflate stream ends or end of file */
-    do {
-        strm.avail_in = size;
-        if (strm.avail_in == 0)
-            break;
-        strm.next_in = source;
-
-        /* run inflate() on input until output buffer not full */
-        do {
-            strm.avail_out = size;
-            strm.next_out = dest;
-            ret = inflate(&strm, Z_NO_FLUSH);
-            assert(ret != Z_STREAM_ERROR);  /* state not clobbered */
-            switch (ret) {
-            case Z_NEED_DICT:
-                ret = Z_DATA_ERROR;     /* and fall through */
-            case Z_DATA_ERROR:
-            case Z_MEM_ERROR:
-                (void)inflateEnd(&strm);
-                return ret;
-            }
-        } while (strm.avail_out == 0);
-
-        /* done when inflate() says it's done */
-    } while (ret != Z_STREAM_END);
-
-    /* clean up and return */
-    (void)inflateEnd(&strm);
-    return ret == Z_STREAM_END ? Z_OK : Z_DATA_ERROR;
-}
-
 int inflateData(char* input_data, char* outputbuf, int size) {
     z_stream stream;
 
@@ -190,14 +142,13 @@ int main(int argc, char** argv) {
 
                 printf("red: %i, green: %i, blue %i\n", paletts[i].red, paletts[i].blue, paletts[i].blue);
             }
-            printf("i: %i", i);
+            printf("i: %i\n\n", i);
         }
 
         if(strcmp("IDAT", chunktype) == 0) {
-            char* true_data = malloc(len);
-            //inflateData(chunkbuf, true_data, len);
-            int return_val = inf(chunkbuf, true_data, len);
-            printf(" ret: %i ,data: %s\n", return_val, true_data);
+            char true_data[len];
+            int return_val = inflateData(chunkbuf, true_data, len);
+            printf("len: %i ret: %i ,data: %d\n",len ,return_val, strlen(true_data));
         }
     }
     printf("width: %i, height: %i, bit_depth: %i, color_type: %i, compression_method: %i, filter_method: %i, interlace_method: %i", png_header.width, png_header.height, png_header.bit_depth, png_header.color_type, png_header.compression_method, png_header.filter_method, png_header.interlace_method);
