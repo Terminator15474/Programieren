@@ -51,9 +51,9 @@ int inflateData(char* input_data, char* outputbuf, int insize, int outsize) {
     stream.zalloc = Z_NULL;
     stream.zfree = Z_NULL;
     stream.opaque = Z_NULL;
-    stream.avail_in = insize;
+    stream.avail_in = Z_NULL;
     stream.next_in = Z_NULL;
-    int ret = inflateInit(&stream);
+    int ret = inflateInit2(&stream, 32);
     if(ret == Z_OK) {
         printf("inflateInit successful\n");
         stream.avail_in = insize;
