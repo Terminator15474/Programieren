@@ -55,13 +55,13 @@ int inflateData(char* input_data, char* outputbuf, int insize, int outsize) {
     stream.next_in = Z_NULL;
     int ret = inflateInit(&stream);
     if(ret == Z_OK) {
-        printf("inflateInit successful\n");
+        printf("inflateInit successful");
         stream.avail_in = insize;
         stream.next_in = input_data;
         stream.avail_out = outsize;
         stream.next_out = outputbuf;
-        ret = inflate(&stream, Z_FINISH);
-        printf("inflated %i bytes , output %i bytes", stream.total_in, stream.total_out);
+        ret = inflate(&stream, Z_NO_FLUSH);
+        printf("inflated %i bytes , output %d bytes\n", stream.total_in, stream.total_out);
         switch (ret) {
             case Z_NEED_DICT:
                 ret = Z_DATA_ERROR;
@@ -106,8 +106,6 @@ int main(int argc, char** argv) {
 
     struct header png_header;
 
-    char data[size];
-
     int pos = 8;
     while(pos < size) {
         char lenbuf[4];
@@ -148,7 +146,7 @@ int main(int argc, char** argv) {
         }
 
         if(strcmp("IDAT", chunktype) == 0) {
-            char true_data[len * FACTOR];
+            char* true_data = malloc(len*FACTOR);
             int return_val = inflateData(chunkbuf, true_data, len, len * FACTOR);
             printf("len: %i ret: %i ,data: %d\n",len ,return_val, strlen(true_data));
         }
