@@ -60,8 +60,8 @@ int inflateData(char* input_data, char* outputbuf, int insize, int outsize) {
         stream.next_in = input_data;
         stream.avail_out = outsize;
         stream.next_out = outputbuf;
-        ret = inflate(&stream, Z_BLOCK);
-        printf("inflated %i bytes , output %d bytes\n", stream.total_in, stream.total_out);
+        ret = inflate(&stream, Z_FINISH);
+        printf("message: %s\n", stream.msg);
         switch (ret) {
             case Z_NEED_DICT:
                 ret = Z_DATA_ERROR;
@@ -73,6 +73,9 @@ int inflateData(char* input_data, char* outputbuf, int insize, int outsize) {
                 printf("error when inflating, error %i\n", ret);
             case Z_BUF_ERROR:
                 printf("error when inflating, BUF_ERROR\n");
+                return ret;
+            case Z_STREAM_END:
+                printf("inflated %i bytes , output %d bytes\n", stream.total_in, stream.total_out);
                 return ret;
         }
         (void)inflateEnd(&stream);
