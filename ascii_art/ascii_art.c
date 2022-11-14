@@ -3,7 +3,7 @@
 #include <string.h>
 #include "zlib/zlib.h"
 #include <assert.h>
-
+#include "puff.h"
 
 #define MAX_SIZE ( 16 * 1024 * 1024 )
 #define CHUNK 16000
@@ -78,7 +78,8 @@ int inflateData(char* input_data, char* outputbuf, int insize, int outsize) {
             case Z_STREAM_END:
                 printf("inflated %i bytes , output %d bytes\n", stream.total_in, stream.total_out);
         }
-        printf("input: %s, output: %s\n", input_data, outputbuf);
+        outputbuf[stream.total_out-1] = '\0';
+        printf("output: %s\n", outputbuf);
         (void)inflateEnd(&stream);
         return ret;
     } else {
@@ -152,7 +153,8 @@ int main(int argc, char** argv) {
 
         if(strcmp("IDAT", chunktype) == 0) {
             char* true_data = malloc(len*FACTOR);
-            int return_val = inflateData(chunkbuf, true_data, len, len * FACTOR);
+            int return_val = puff(true_data, len*FACTOR, chunkbuf, len*FACTOR);
+            //int return_val = inflateData(chunkbuf, true_data, len, len * FACTOR);
             printf("len: %i ret: %i ,data: %d\n",len ,return_val, strlen(true_data));
         }
     }
