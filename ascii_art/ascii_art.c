@@ -73,13 +73,12 @@ int inflateData(char* input_data, char* outputbuf, int insize, int outsize) {
                 printf("error when inflating, error %i\n", ret);
             case Z_BUF_ERROR:
                 printf("error when inflating, BUF_ERROR\n");
-                return ret;
             case Z_STREAM_END:
                 printf("inflated %i bytes , output %d bytes\n", stream.total_in, stream.total_out);
-                return ret;
         }
-        outputbuf[stream.total_out-1] = '\0';
+        printf("input: %s, output: %s\n", input_data, outputbuf);
         (void)inflateEnd(&stream);
+        return ret;
     } else {
         printf("inflateInit failed, error: %i\n", ret);
         return ret;
