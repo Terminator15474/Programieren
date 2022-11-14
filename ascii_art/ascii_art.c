@@ -6,6 +6,7 @@
 
 #define MAX_SIZE ( 16 * 1024 * 1024 )
 #define CHUNK 16000
+#define FACTOR 7
 
 struct header {
     int width;
@@ -43,7 +44,7 @@ int get_big_endian(const char *buf) {
             (unsigned char)buf[3];
 }
 
-int inflateData(char* input_data, char* outputbuf, int size) {
+int inflateData(char* input_data, char* outputbuf, int insize, int outsize) {
     z_stream stream;
 
     stream.zalloc = Z_NULL;
@@ -54,27 +55,26 @@ int inflateData(char* input_data, char* outputbuf, int size) {
     int ret = inflateInit(&stream);
     if(ret == Z_OK) {
         printf("inflateInit successful\n");
-        stream.avail_in = CHUNK;
+        stream.avail_in = insize;
         stream.next_in = input_data;
-        stream.avail_out = size;
+        stream.avail_out = outsize;
         stream.next_out = outputbuf;
-        do {
-            ret = inflate(&stream, Z_NO_FLUSH);
-            printf("inflated %i bytes , output %i bytes", stream.total_in, stream.total_out);
-            (void)inflateEnd(&stream);
-            printf("return value: %i\n", ret);
-            switch (ret) {
-                case Z_NEED_DICT:
-                    ret = Z_DATA_ERROR;
-                    printf("error when inflating, error %i\n", ret);
-                case Z_DATA_ERROR:
-                    printf("error when inflating, error Z_DATA_ERROR\n");
-                case Z_MEM_ERROR:
-                    (void)inflateEnd(&stream);
-                    printf("error when inflating, error %i\n", ret);
-                    return ret;
-            }
-        } while(stream.avail_out != 0);
+        ret = inflate(&stream, Z_FINISH);
+        printf("inflated %i bytes , output %i bytes", stream.total_in, stream.total_out);
+        switch (ret) {
+            case Z_NEED_DICT:
+                ret = Z_DATA_ERROR;
+                printf("error when inflating, error %i\n", ret);
+            case Z_DATA_ERROR:
+                printf("error when inflating, error Z_DATA_ERROR\n");
+            case Z_MEM_ERROR:
+                (void)inflateEnd(&stream);
+                printf("error when inflating, error %i\n", ret);
+            case Z_BUF_ERROR:
+                printf("error when inflating, BUF_ERROR\n");
+                return ret;
+        }
+        (void)inflateEnd(&stream);
     } else {
         printf("inflateInit failed, error: %i\n", ret);
         return ret;
@@ -147,8 +147,8 @@ int main(int argc, char** argv) {
         }
 
         if(strcmp("IDAT", chunktype) == 0) {
-            char true_data[len];
-            int return_val = inflateData(chunkbuf, true_data, len);
+            char true_data[len * FACTOR];
+            int return_val = inflateData(chunkbuf, true_data, len, len * FACTOR);
             printf("len: %i ret: %i ,data: %d\n",len ,return_val, strlen(true_data));
         }
     }
