@@ -60,8 +60,10 @@ int inflateData(char* input_data, char* outputbuf, int insize, int outsize) {
         stream.next_in = input_data;
         stream.avail_out = outsize;
         stream.next_out = outputbuf;
-        ret = inflate(&stream, Z_FINISH);
-        printf("message: %s\n", stream.msg);
+        do {
+            ret = inflate(&stream, Z_FINISH);
+        } while(stream.avail_in > 0);
+        printf("message: %s, avail_out: %i\n", stream.msg, stream.avail_out);
         switch (ret) {
             case Z_NEED_DICT:
                 ret = Z_DATA_ERROR;
