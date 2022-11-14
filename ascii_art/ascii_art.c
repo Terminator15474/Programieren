@@ -55,12 +55,12 @@ int inflateData(char* input_data, char* outputbuf, int insize, int outsize) {
     stream.next_in = Z_NULL;
     int ret = inflateInit(&stream);
     if(ret == Z_OK) {
-        printf("inflateInit successful");
+        printf("inflateInit successful\n");
         stream.avail_in = insize;
         stream.next_in = input_data;
         stream.avail_out = outsize;
         stream.next_out = outputbuf;
-        ret = inflate(&stream, Z_NO_FLUSH);
+        ret = inflate(&stream, Z_BLOCK);
         printf("inflated %i bytes , output %d bytes\n", stream.total_in, stream.total_out);
         switch (ret) {
             case Z_NEED_DICT:
