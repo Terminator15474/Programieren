@@ -78,6 +78,7 @@ int inflateData(char* input_data, char* outputbuf, int insize, int outsize) {
                 printf("inflated %i bytes , output %d bytes\n", stream.total_in, stream.total_out);
                 return ret;
         }
+        outputbuf[stream.total_out-1] = '\0';
         (void)inflateEnd(&stream);
     } else {
         printf("inflateInit failed, error: %i\n", ret);
