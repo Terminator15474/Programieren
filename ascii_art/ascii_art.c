@@ -153,7 +153,8 @@ int main(int argc, char** argv) {
 
         if(strcmp("IDAT", chunktype) == 0) {
             char* true_data = malloc(len*FACTOR);
-            int return_val = puff(true_data, len*FACTOR, chunkbuf, len*FACTOR);
+            int full_lenth = len*FACTOR;
+            int return_val = puff((unsigned char *)true_data, (unsigned long*) &full_lenth, (unsigned char*) chunkbuf, (unsigned long *) &len);
             //int return_val = inflateData(chunkbuf, true_data, len, len * FACTOR);
             printf("len: %i ret: %i ,data: %d\n",len ,return_val, strlen(true_data));
         }
