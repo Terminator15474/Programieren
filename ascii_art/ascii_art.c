@@ -54,7 +54,7 @@ int inflateData(char* input_data, char* outputbuf, int size) {
     int ret = inflateInit(&stream);
     if(ret == Z_OK) {
         printf("inflateInit successful\n");
-        stream.avail_in = size;
+        stream.avail_in = CHUNK;
         stream.next_in = input_data;
         stream.avail_out = size;
         stream.next_out = outputbuf;
