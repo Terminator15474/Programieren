@@ -1,8 +1,0 @@
-A:/Programieren/ascii_art/zlib_build/CMakeFiles/zlib.dir
-A:/Programieren/ascii_art/zlib_build/CMakeFiles/zlibstatic.dir
-A:/Programieren/ascii_art/zlib_build/CMakeFiles/example.dir
-A:/Programieren/ascii_art/zlib_build/CMakeFiles/minigzip.dir
-A:/Programieren/ascii_art/zlib_build/CMakeFiles/RUN_TESTS.dir
-A:/Programieren/ascii_art/zlib_build/CMakeFiles/INSTALL.dir
-A:/Programieren/ascii_art/zlib_build/CMakeFiles/ALL_BUILD.dir
-A:/Programieren/ascii_art/zlib_build/CMakeFiles/ZERO_CHECK.dir
