@@ -28,7 +28,13 @@ struct plte_palette {
     unsigned char red;
     unsigned char green;
     unsigned char blue;
+    char init;
 } plte_palette;
+
+struct png_image {
+    struct header header;
+    struct rgba* pixel;
+} png_image;
 
 //Check headers for png
 void checkHeadersPNG(char* buffer) {
@@ -56,9 +62,11 @@ int inflateData( unsigned char* input_data, unsigned char* outputbuf, int insize
     stream.zalloc = Z_NULL;
     stream.zfree = Z_NULL;
     stream.opaque = Z_NULL;
-    stream.avail_in = Z_NULL;
+    stream.avail_in = 0;
     stream.next_in = Z_NULL;
-    int ret = inflateInit2(&stream, 32);
+    printf("TEST");
+    int ret = inflateInit(&stream);
+    printf("test");
     if(ret == Z_OK) {
         printf("inflateInit successful\n");
         stream.avail_in = insize;
@@ -87,6 +95,7 @@ int inflateData( unsigned char* input_data, unsigned char* outputbuf, int insize
         return ret;
     } else {
         printf("inflateInit failed, error: %i\n", ret);
+        (void)inflateEnd(&stream);
         return ret;
     }
 }
@@ -112,9 +121,8 @@ int main(int argc, char** argv) {
     }
 
     checkHeadersPNG(buf);
-
+    struct plte_palette* palette = NULL;
     struct header png_header;
-
     int pos = 8;
     while(pos < size) {
         unsigned char lenbuf[4];
@@ -140,14 +148,14 @@ int main(int argc, char** argv) {
             png_header.filter_method = chunkbuf[11];
             png_header.interlace_method = chunkbuf[12];
         }
-
         if( strcmp("PLTE", (char*) chunktype) == 0) {
             int i;
-            struct plte_palette paletts[len/3];
+            palette = malloc(len/3);
             for (i = 0; i < len/3; i++) {
-                paletts[i].red = chunkbuf[i*3];
-                paletts[i].green = chunkbuf[i * 3 + 1];
-                paletts[i].blue = chunkbuf[i * 3 + 2];
+                palette[i].red = chunkbuf[i*3];
+                palette[i].green = chunkbuf[i * 3 + 1];
+                palette[i].blue = chunkbuf[i * 3 + 2];
+                palette[i].init = 1;
             }
         }
 
@@ -157,7 +165,14 @@ int main(int argc, char** argv) {
 
             int return_val = inflateData(chunkbuf, true_data, len, len * FACTOR);
             printf("return value: %i", return_val);
-            if( return_val == 1 && png_header.
+            if( return_val != 1) { printf("ERROR when decompressing file"); exit(1); }
+
+            struct png_image image;
+            image.header = png_header;
+            switch (png_header.color_type) {
+                case 3:
+                    if(palette[0].init ==  0) { printf("DATA ERROR no PLTE"); exit(1); }
+            }
         }
 
     }
