@@ -3,7 +3,6 @@
 #include <string.h>
 #include "zlib/zlib.h"
 #include <assert.h>
-#include "puff.h"
 
 #define MAX_SIZE ( 16 * 1024 * 1024 )
 #define CHUNK 16000
@@ -45,7 +44,7 @@ int get_big_endian(const char *buf) {
             (unsigned char)buf[3];
 }
 
-int inflateData(char* input_data, char* outputbuf, int insize, int outsize) {
+int inflateData( unsigned char* input_data, unsigned char* outputbuf, int insize, int outsize) {
     z_stream stream;
 
     stream.zalloc = Z_NULL;
@@ -154,9 +153,20 @@ int main(int argc, char** argv) {
         if(strcmp("IDAT", chunktype) == 0) {
             char* true_data = malloc(len*FACTOR);
             int full_lenth = len*FACTOR;
-            int return_val = puff((unsigned char *)true_data, (unsigned long*) &full_lenth, (unsigned char*) chunkbuf, (unsigned long *) &len);
-            //int return_val = inflateData(chunkbuf, true_data, len, len * FACTOR);
-            printf("len: %i ret: %i ,data: %d\n",len ,return_val, strlen(true_data));
+
+            int return_val = inflateData(chunkbuf, true_data, len, len * FACTOR);
+            printf("len: %i ret: %i ,data: %d\n",len ,return_val, (int)strlen(true_data));
+            // read scanlines and decode
+            int i;
+            for(i = 0; i < png_header.height; i++) {
+                int filter = true_data[i * (png_header.width + 1)];
+                int j;
+                for(j = 0; j < png_header.width; j++) {
+                    int pixel = true_data[i * (png_header.width + 1) + j + 1];
+                    printf("%i ", pixel);
+                }
+                printf("\n");
+            }
         }
     }
     printf("width: %i, height: %i, bit_depth: %i, color_type: %i, compression_method: %i, filter_method: %i, interlace_method: %i", png_header.width, png_header.height, png_header.bit_depth, png_header.color_type, png_header.compression_method, png_header.filter_method, png_header.interlace_method);
