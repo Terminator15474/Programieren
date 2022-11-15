@@ -156,26 +156,8 @@ int main(int argc, char** argv) {
             int full_lenth = len*FACTOR;
 
             int return_val = inflateData(chunkbuf, true_data, len, len * FACTOR);
-            // read scanlines and decode
-            struct rgba pixels[png_header.width][png_header.height];
-            int i;
-            for( i = 0; i < png_header.height; i++) {
-                int j;
-                for( j = 0; j < png_header.width; j++) {
-                    pixels[i][j].r = true_data[i*png_header.width*4 + j*4];
-                    pixels[i][j].g = true_data[i*png_header.width*4 + j*4 + 1];
-                    pixels[i][j].b = true_data[i*png_header.width*4 + j*4 + 2];
-                    pixels[i][j].a = true_data[i*png_header.width*4 + j*4 + 3];
-                }
-            }
-            printf("i: %s\n", i);
-            // Print pixels
-            for( i = 0; i < png_header.height; i++) {
-                int j;
-                for( j = 0; j < png_header.width; j++) {
-                    printf("r: %i, g: %i, b: %i, a: %i\n", pixels[i][j].r, pixels[i][j].g, pixels[i][j].b, pixels[i][j].a);
-                }
-            }
+            printf("return value: %i", return_val);
+            if( return_val == 1 && png_header.
         }
 
     }
