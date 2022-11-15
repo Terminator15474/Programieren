@@ -3,7 +3,6 @@
 #include <string.h>
 #include "zlib/zlib.h"
 #include <assert.h>
-
 #define MAX_SIZE ( 16 * 1024 * 1024 )
 #define CHUNK 16000
 #define FACTOR 7
@@ -17,6 +16,13 @@ struct header {
     char filter_method;
     char interlace_method;
 } header;
+
+struct rgba {
+    unsigned char r;
+    unsigned char g;
+    unsigned char b;
+    unsigned char a;
+} rgba;
 
 struct plte_palette {
     unsigned char red;
@@ -77,8 +83,6 @@ int inflateData( unsigned char* input_data, unsigned char* outputbuf, int insize
             case Z_STREAM_END:
                 printf("inflated %i bytes , output %d bytes\n", stream.total_in, stream.total_out);
         }
-        outputbuf[stream.total_out-1] = '\0';
-        printf("output: %s\n", outputbuf);
         (void)inflateEnd(&stream);
         return ret;
     } else {
@@ -113,21 +117,21 @@ int main(int argc, char** argv) {
 
     int pos = 8;
     while(pos < size) {
-        char lenbuf[4];
+        unsigned char lenbuf[4];
         memcpy(lenbuf, buf + pos, 4);
         pos +=4;
         int len = get_big_endian(lenbuf);
-        char chunktype[4];
+        unsigned char chunktype[4];
         memcpy(chunktype, buf + pos, 4);
-        char chunkbuf[len];
+        unsigned char chunkbuf[len];
         pos += 4;
         memcpy(chunkbuf, buf + pos, len);
         pos+=len;
-        char crcbuf[4];
+        unsigned char crcbuf[4];
         memcpy(crcbuf, buf+pos, 4);
         pos+=4;
 
-        if( strcmp("IHDR", chunktype) == 0) {
+        if( strcmp("IHDR",(char *) chunktype) == 0) {
             png_header.width = get_big_endian(chunkbuf);
             png_header.height = get_big_endian(chunkbuf+4);
             png_header.bit_depth = chunkbuf[8];
@@ -137,37 +141,43 @@ int main(int argc, char** argv) {
             png_header.interlace_method = chunkbuf[12];
         }
 
-        if( strcmp("PLTE", chunktype) == 0) {
+        if( strcmp("PLTE", (char*) chunktype) == 0) {
             int i;
             struct plte_palette paletts[len/3];
             for (i = 0; i < len/3; i++) {
                 paletts[i].red = chunkbuf[i*3];
                 paletts[i].green = chunkbuf[i * 3 + 1];
                 paletts[i].blue = chunkbuf[i * 3 + 2];
-
-                printf("red: %i, green: %i, blue %i\n", paletts[i].red, paletts[i].blue, paletts[i].blue);
             }
-            printf("i: %i\n\n", i);
         }
 
-        if(strcmp("IDAT", chunktype) == 0) {
-            char* true_data = malloc(len*FACTOR);
+        if(strcmp("IDAT",(char*) chunktype) == 0) {
+            unsigned char* true_data = malloc(len*FACTOR);
             int full_lenth = len*FACTOR;
 
             int return_val = inflateData(chunkbuf, true_data, len, len * FACTOR);
-            printf("len: %i ret: %i ,data: %d\n",len ,return_val, (int)strlen(true_data));
             // read scanlines and decode
+            struct rgba pixels[png_header.width][png_header.height];
             int i;
-            for(i = 0; i < png_header.height; i++) {
-                int filter = true_data[i * (png_header.width + 1)];
+            for( i = 0; i < png_header.height; i++) {
                 int j;
-                for(j = 0; j < png_header.width; j++) {
-                    int pixel = true_data[i * (png_header.width + 1) + j + 1];
-                    printf("%i ", pixel);
+                for( j = 0; j < png_header.width; j++) {
+                    pixels[i][j].r = true_data[i*png_header.width*4 + j*4];
+                    pixels[i][j].g = true_data[i*png_header.width*4 + j*4 + 1];
+                    pixels[i][j].b = true_data[i*png_header.width*4 + j*4 + 2];
+                    pixels[i][j].a = true_data[i*png_header.width*4 + j*4 + 3];
                 }
-                printf("\n");
+            }
+            printf("i: %s\n", i);
+            // Print pixels
+            for( i = 0; i < png_header.height; i++) {
+                int j;
+                for( j = 0; j < png_header.width; j++) {
+                    printf("r: %i, g: %i, b: %i, a: %i\n", pixels[i][j].r, pixels[i][j].g, pixels[i][j].b, pixels[i][j].a);
+                }
             }
         }
+
     }
     printf("width: %i, height: %i, bit_depth: %i, color_type: %i, compression_method: %i, filter_method: %i, interlace_method: %i", png_header.width, png_header.height, png_header.bit_depth, png_header.color_type, png_header.compression_method, png_header.filter_method, png_header.interlace_method);
     fclose(input);
