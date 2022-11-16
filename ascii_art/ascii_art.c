@@ -25,15 +25,14 @@ struct rgba {
 } rgba;
 
 struct plte_palette {
-    unsigned char red;
-    unsigned char green;
-    unsigned char blue;
+    struct rgba* pixels;
     char init;
 } plte_palette;
 
 struct png_image {
     struct header header;
     struct rgba* pixel;
+    struct plte_palette palette;
 } png_image;
 
 //Check headers for png
@@ -63,6 +62,26 @@ int filterData(unsigned char* inputbuf, struct png_image* image) {
     for (ypos = 0; ypos < image->header.height; ypos++) {
         filter_type = inputbuf[ypos];
         printf("filter type: %d\n", filter_type);
+        switch (filter_type) {
+            case 0:
+                inputbuf+=1;
+                for ( xpos = 1; xpos <= image->header.width; xpos++) {
+                    char index = inputbuf[xpos];
+                    printf("index: %d\n", index);
+                    image->pixel = &image->palette.pixels[index];
+                }
+                break;
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+        }
     }
 }
     
@@ -131,7 +150,7 @@ int main(int argc, char** argv) {
     }
 
     checkHeadersPNG(buf);
-    struct plte_palette* palette = (struct plte_palette*) malloc(256 * sizeof(struct plte_palette));
+    struct plte_palette palette;
     struct header png_header;
     int pos = 8;
     while(pos < size) {
@@ -160,11 +179,12 @@ int main(int argc, char** argv) {
         }
         if( strcmp("PLTE", (char*) chunktype) == 0) {
             int i;
+            palette.init = 1;
             for (i = 0; i < len/3; i++) {
-                palette[i].red = chunkbuf[i*3];
-                palette[i].green = chunkbuf[i * 3 + 1];
-                palette[i].blue = chunkbuf[i * 3 + 2];
-                palette[i].init = 1;
+                palette.pixels[i].r = chunkbuf[i*3];
+                palette.pixels[i].g = chunkbuf[i * 3 + 1];
+                palette.pixels[i].b = chunkbuf[i * 3 + 2];
+                palette.pixels[i].a = chunkbuf[i * 3 + 3];
             }
         }
 
@@ -178,9 +198,10 @@ int main(int argc, char** argv) {
 
             struct png_image image;
             image.header = png_header;
+            image.palette = palette;
             switch (png_header.color_type) {
                 case 3:
-                    if(palette[0].init ==  0) { printf("DATA ERROR no PLTE"); exit(1); }
+                    if(palette.init ==  0) { printf("DATA ERROR no PLTE"); exit(1); }
                     filterData(true_data, &image);
             }
         }
