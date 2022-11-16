@@ -56,6 +56,14 @@ int get_big_endian(const char *buf) {
             (unsigned char)buf[3];
 }
 
+int filterData(unsigned char* inputbuf, unsigned char* outputbuf, int width, int height, int outsize) {
+   int ypos = 0;
+   int xpos = 0;
+   for (ypos; ypos < height; ypos++) {
+   
+   }
+}
+
 int inflateData( unsigned char* input_data, unsigned char* outputbuf, int insize, int outsize) {
     z_stream stream;
 
@@ -121,7 +129,7 @@ int main(int argc, char** argv) {
     }
 
     checkHeadersPNG(buf);
-    struct plte_palette* palette = NULL;
+    struct plte_palette* palette = (struct plte_palette*) malloc(256 * sizeof(struct plte_palette));
     struct header png_header;
     int pos = 8;
     while(pos < size) {
@@ -150,7 +158,6 @@ int main(int argc, char** argv) {
         }
         if( strcmp("PLTE", (char*) chunktype) == 0) {
             int i;
-            palette = malloc(len/3);
             for (i = 0; i < len/3; i++) {
                 palette[i].red = chunkbuf[i*3];
                 palette[i].green = chunkbuf[i * 3 + 1];
