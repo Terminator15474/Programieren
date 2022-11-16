@@ -59,11 +59,11 @@ int get_big_endian(const char *buf) {
 int filterData(unsigned char* inputbuf, struct png_image* image) {
     int ypos = 0;
     int xpos = 0;
-    for (ypos = 0; ypos < image->header.height; ypos++) {
-        
-    }
-}
+     for (ypos = 0; ypos < image->header.height; ypos++) {
 
+     }
+}
+    
 int inflateData( unsigned char* input_data, unsigned char* outputbuf, int insize, int outsize) {
     z_stream stream;
 
