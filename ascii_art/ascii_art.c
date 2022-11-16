@@ -59,9 +59,11 @@ int get_big_endian(const char *buf) {
 int filterData(unsigned char* inputbuf, struct png_image* image) {
     int ypos = 0;
     int xpos = 0;
-     for (ypos = 0; ypos < image->header.height; ypos++) {
-
-     }
+    char filter_type = 0;
+    for (ypos = 0; ypos < image->header.height; ypos++) {
+        filter_type = inputbuf[ypos];
+        printf("filter type: %d\n", filter_type);
+    }
 }
     
 int inflateData( unsigned char* input_data, unsigned char* outputbuf, int insize, int outsize) {
@@ -179,6 +181,7 @@ int main(int argc, char** argv) {
             switch (png_header.color_type) {
                 case 3:
                     if(palette[0].init ==  0) { printf("DATA ERROR no PLTE"); exit(1); }
+                    filterData(true_data, &image);
             }
         }
 
