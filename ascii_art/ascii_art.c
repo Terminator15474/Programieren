@@ -42,7 +42,7 @@ void checkHeadersPNG(char* buffer) {
         exit(1);
     }
 
-    if(! (unsigned char) buffer[1] == 'P' ) {
+    if(!((unsigned char) buffer[1] == 'P')) {
         printf("error header byte 2\n");
         exit(1);
     }
@@ -196,6 +196,7 @@ int main(int argc, char** argv) {
             printf("return value: %i", return_val);
             if( return_val != 1) { printf("ERROR when decompressing file"); exit(1); }
 
+            printf("test");
             struct png_image image;
             image.header = png_header;
             image.palette = palette;
@@ -203,6 +204,12 @@ int main(int argc, char** argv) {
                 case 3:
                     if(palette.init ==  0) { printf("DATA ERROR no PLTE"); exit(1); }
                     filterData(true_data, &image);
+            }
+            // print pixels from image
+            // in format pixel(r, g, b, a)
+            int i;
+            for (i = 0; i < image.header.width * image.header.height; i++) {
+                printf("pixel(%i, %i, %i, %i)\n", image.pixel[i].r, image.pixel[i].g, image.pixel[i].b, image.pixel[i].a);
             }
         }
 
