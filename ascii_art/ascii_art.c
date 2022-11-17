@@ -59,6 +59,7 @@ int filterData(unsigned char* inputbuf, struct png_image* image) {
     int ypos = 0;
     int xpos = 0;
     char filter_type = 0;
+    image->pixel = (struct rgba*) malloc(sizeof(struct rgba) * image->header.width * image->header.height);
     for (ypos = 0; ypos < image->header.height; ypos++) {
         filter_type = inputbuf[ypos];
         printf("filter type: %d\n", filter_type);
@@ -67,7 +68,6 @@ int filterData(unsigned char* inputbuf, struct png_image* image) {
                 inputbuf+=1;
                 for ( xpos = 1; xpos <= image->header.width; xpos++) {
                     char index = inputbuf[xpos];
-                    printf("index: %d\n", index);
                     image->pixel = &image->palette.pixels[index];
                 }
                 break;
@@ -93,9 +93,7 @@ int inflateData( unsigned char* input_data, unsigned char* outputbuf, int insize
     stream.opaque = Z_NULL;
     stream.avail_in = 0;
     stream.next_in = Z_NULL;
-    printf("TEST");
     int ret = inflateInit(&stream);
-    printf("test");
     if(ret == Z_OK) {
         printf("inflateInit successful\n");
         stream.avail_in = insize;
@@ -179,6 +177,7 @@ int main(int argc, char** argv) {
         }
         if( strcmp("PLTE", (char*) chunktype) == 0) {
             int i;
+            palette.pixels = (struct rgba*) malloc(sizeof(struct rgba) * len/3);
             palette.init = 1;
             for (i = 0; i < len/3; i++) {
                 palette.pixels[i].r = chunkbuf[i*3];
@@ -208,7 +207,7 @@ int main(int argc, char** argv) {
             // print pixels from image
             // in format pixel(r, g, b, a)
             int i;
-            for (i = 0; i < image.header.width * image.header.height; i++) {
+            for (i = 0; i < (image.header.width-2) * (image.header.height-2); i++) {
                 printf("pixel(%i, %i, %i, %i)\n", image.pixel[i].r, image.pixel[i].g, image.pixel[i].b, image.pixel[i].a);
             }
         }
