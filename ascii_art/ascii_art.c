@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "zlib/zllaib.h"
+#include "zlib/zlib.h"
 #include <assert.h>
 #define MAX_SIZE ( 16 * 1024 * 1024 )
 #define CHUNK 16000
