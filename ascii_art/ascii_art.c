@@ -84,7 +84,7 @@ int filterData(unsigned char* inputbuf, struct png_image* image) {
         }
     }
 }
-    
+
 int inflateData( unsigned char* input_data, unsigned char* outputbuf, int insize, int outsize) {
     z_stream stream;
 
@@ -204,10 +204,8 @@ int main(int argc, char** argv) {
                     if(palette.init ==  0) { printf("DATA ERROR no PLTE"); exit(1); }
                     filterData(true_data, &image);
             }
-            // print pixels from image
-            // in format pixel(r, g, b, a)
             int i;
-            for (i = 0; i < (image.header.width-2) * (image.header.height-2); i++) {
+            for (i = 0; i < (image.header.width) * (image.header.height-1); i++) {
                 printf("pixel(%i, %i, %i, %i)\n", image.pixel[i].r, image.pixel[i].g, image.pixel[i].b, image.pixel[i].a);
             }
         }
