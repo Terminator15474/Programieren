@@ -36,7 +36,10 @@ w1, w2, w1_list, w2_list = grad_descent(2, 3, 0.01, 100)
 print(w1, w2) # should be close to 0.5, 0.5
 
 # plot the values of w1 and w2 at each iteration
-plt.plot(w1_list, w2_list)
-plt.xlabel('w1')
-plt.ylabel('w2')
+plt.plot(range(len(w1_list)), w1_list, label='w1')
+plt.plot(range(len(w2_list)), w2_list, label='w2')
+plt.xlabel('Number of iterations')
+plt.ylabel('Value of w1 and w2')
+plt.title('Values of w1 and w2 over time')
+plt.legend()
 plt.show()
